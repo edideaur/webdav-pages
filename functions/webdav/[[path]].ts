@@ -1,32 +1,34 @@
-import { parseFilePath } from "./utils";
-import { handleRequestGet } from "./get";
-import { handleRequestHead } from "./head";
-import { handleRequestPropfind } from "./propfind";
-import { MANIFEST } from "./_manifest_data";
-
-async function handleRequestOptions(): Promise<Response> {
-  return new Response(null, {
-    status: 204,
-    headers: {
-      Allow: "GET, HEAD, OPTIONS, PROPFIND",
-      DAV: "1",
-      "MS-Author-Via": "DAV",
-    },
-  });
-}
+import { PROPFIND, FILES } from "./_dav_data";
 
 export const onRequest: PagesFunction = async function (context) {
-  const { request } = context;
-  const method = request.method.toUpperCase();
+  const method = context.request.method.toUpperCase();
 
-  if (method === "OPTIONS") return handleRequestOptions();
+  if (method === "OPTIONS") {
+    return new Response(null, {
+      status: 204,
+      headers: { Allow: "GET, HEAD, OPTIONS, PROPFIND", DAV: "1", "MS-Author-Via": "DAV" },
+    });
+  }
 
-  const filePath = parseFilePath(context);
-  const params = { filePath, request, manifest: MANIFEST };
+  const raw = context.params.path;
+  const segments = raw ? (Array.isArray(raw) ? raw : [raw]) : [];
+  const filePath = decodeURIComponent(segments.join("/")).replace(/\/+$/, "");
 
-  if (method === "GET") return handleRequestGet(params);
-  if (method === "HEAD") return handleRequestHead(params);
-  if (method === "PROPFIND") return handleRequestPropfind(params);
+  if (method === "PROPFIND") {
+    const depth = context.request.headers.get("Depth") ?? "1";
+    const responses = PROPFIND[filePath];
+    if (!responses) return new Response("Not Found", { status: 404 });
+    const xml = responses[depth === "0" ? 0 : Math.min(1, responses.length - 1)];
+    return new Response(xml, {
+      status: 207,
+      headers: { "Content-Type": "application/xml; charset=utf-8" },
+    });
+  }
+
+  if (method === "GET" || method === "HEAD") {
+    if (!FILES.has(filePath)) return new Response("Not Found", { status: 404 });
+    return Response.redirect(new URL("/files/" + filePath, context.request.url).toString(), 302);
+  }
 
   return new Response("Method Not Allowed", {
     status: 405,
