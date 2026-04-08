@@ -195,9 +195,9 @@ function walkDir(dir, baseDir, out = []) {
 // ── XML helpers ──
 
 function encodeHref(p, isDir) {
-  if (p === "") return "/webdav/";
+  if (p === "") return "/files/";
   const encoded = p.split("/").map(encodeURIComponent).join("/");
-  return isDir ? `/webdav/${encoded}/` : `/webdav/${encoded}`;
+  return isDir ? `/files/${encoded}/` : `/files/${encoded}`;
 }
 
 function entryXml(e) {
@@ -263,7 +263,7 @@ for (const e of entries) {
 // ── Write ──
 
 const out = `// Auto-generated — do not edit.\nexport const PROPFIND=${JSON.stringify(propfind)};\nexport const FILES=new Set(${JSON.stringify(filePaths)});\n`;
-fs.writeFileSync(path.join(root, "functions", "webdav", "_dav_data.js"), out);
+fs.writeFileSync(path.join(root, "functions", "files", "_dav_data.js"), out);
 
 const total = entries.length;
 const dirs = entries.filter(e => e.dir).length;

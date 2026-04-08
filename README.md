@@ -32,7 +32,7 @@ In the Pages dashboard set:
 
 | Setting | Value |
 |---|---|
-| Build command | `node scripts/generate-manifest.js` |
+| Build command | `bun scripts/generate-manifest.js` |
 | Build output directory | `/` |
 
 The build script walks `/files/`, infers MIME types, and writes `functions/webdav/_manifest_data.js`. Cloudflare's esbuild bundles that into the Worker so directory listings need zero runtime I/O.
