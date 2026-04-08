@@ -1,7 +1,8 @@
-import { PROPFIND, FILES } from "./_dav_data";
+import { PROPFIND } from "./_dav_data";
 
 export const onRequest: PagesFunction = async function (context) {
   const method = context.request.method.toUpperCase();
+  const url = new URL(context.request.url);
 
   if (method === "OPTIONS") {
     return new Response(null, {
@@ -23,6 +24,10 @@ export const onRequest: PagesFunction = async function (context) {
       status: 207,
       headers: { "Content-Type": "application/xml; charset=utf-8" },
     });
+  }
+
+  if (method === "GET" || method === "HEAD") {
+    return Response.redirect(url.pathname, 302);
   }
 
   return new Response("Method Not Allowed", {
