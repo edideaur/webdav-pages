@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -9,181 +8,206 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;600&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    ::selection { background: #000; color: #fff; }
+    ::selection { background: var(--sel-bg); color: var(--sel-fg); }
 
+    :root {
+      --bg: #fff; --fg: #111; --muted: #999; --body: #333;
+      --surface: #f4f4f4; --surface-hover: #ebebeb;
+      --sel-bg: #000; --sel-fg: #fff;
+      --border: #e0e0e0;
+    }
+    [data-theme="dark"] {
+      --bg: #000; --fg: #eee; --muted: #666; --body: #bbb;
+      --surface: #111; --surface-hover: #1a1a1a;
+      --sel-bg: #fff; --sel-fg: #000;
+      --border: #222;
+    }
 
-body {
-  font-family: 'IBM Plex Mono', monospace;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-  padding-top: 15vh;
-  line-height: 1.6;
-  background: #fff;
-  color: #111;
-}
+    body {
+      font-family: 'IBM Plex Mono', monospace;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      padding-top: 15vh;
+      line-height: 1.6;
+      background: var(--bg);
+      color: var(--fg);
+      transition: background 0.15s, color 0.15s;
+    }
 
-.content-container {
-  width: 100%;
-  max-width: 600px;
-}
+    .content-container { width: 100%; max-width: 600px; }
 
-h1 {
-  font-size: 15px;
-  font-weight: 600;
-  margin-bottom: 0.3em;
-  letter-spacing: -0.5px;
-}
+    h1 {
+      font-size: 15px; font-weight: 600; margin-bottom: 0.3em;
+      letter-spacing: -0.5px; cursor: pointer; user-select: none;
+    }
 
-p { font-weight: 400; margin-bottom: 1em; color: #333; font-size: 13px; }
+    p { font-weight: 400; margin-bottom: 1em; color: var(--body); font-size: 13px; }
+    a { color: var(--fg); text-decoration: underline; text-underline-offset: 4px; }
+    a:hover { opacity: 0.5; }
+    section { margin-bottom: 2em; }
 
-a { color: #000; text-decoration: underline; text-underline-offset: 4px; }
-a:hover { opacity: 0.6; }
+    h2 {
+      font-size: 11px; font-weight: 300; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 0.6em;
+    }
 
-section { margin-bottom: 2em; }
+    ol { padding-left: 1.4em; font-size: 13px; color: var(--body); }
+    ol li { margin-bottom: 0.3em; }
 
-h2 {
-  font-size: 11px;
-  font-weight: 300;
-  color: #999;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  margin-bottom: 0.6em;
-}
+    code {
+      font-family: inherit; font-size: 12px;
+      background: var(--surface); padding: 0 4px; color: var(--fg);
+    }
 
-ol { padding-left: 1.4em; font-size: 13px; color: #333; }
-ol li { margin-bottom: 0.3em; }
+    pre {
+      font-family: inherit; font-size: 12px;
+      background: var(--surface); padding: 10px 12px; margin-top: 6px;
+      color: var(--fg); white-space: pre; overflow-x: auto; cursor: pointer;
+      border: 0.5px solid var(--border);
+    }
+    pre:hover { background: var(--surface-hover); }
+    pre.copied { background: var(--fg); color: var(--bg); border-color: var(--fg); }
 
-code {
-  font-family: inherit;
-  font-size: 12px;
-  background: #f4f4f4;
-  padding: 0 4px;
-  color: #111;
-}
+    .url-box {
+      font-family: inherit; font-size: 13px;
+      background: var(--surface); padding: 10px 12px; margin-bottom: 2em;
+      color: var(--fg); cursor: pointer; display: flex;
+      justify-content: space-between; align-items: center; gap: 12px;
+      border: 0.5px solid var(--border);
+    }
+    .url-box:hover { background: var(--surface-hover); }
+    .url-box.copied { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+    .url-box span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .url-box .copy-hint { font-size: 11px; color: var(--muted); flex-shrink: 0; }
+    .url-box.copied .copy-hint { color: var(--bg); }
 
-pre {
-  font-family: inherit;
-  font-size: 12px;
-  background: #f4f4f4;
-  padding: 10px 12px;
-  margin-top: 6px;
-  color: #111;
-  white-space: pre;
-  overflow-x: auto;
-  cursor: pointer;
-}
+    .corner-text {
+      position: fixed; bottom: 20px; left: 20px;
+      font-size: 11px; font-weight: 300; color: var(--muted);
+    }
 
-pre:hover { background: #ebebeb; }
-pre.copied { background: #000; color: #fff; }
-
-.corner-text {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  font-size: 11px;
-  font-weight: 300;
-  color: #bbb;
-}
-
-@media (max-width: 480px) { body { padding-top: 10vh; } }
-@media print { .corner-text { display: none; } }
-
-
+    @media (max-width: 480px) { body { padding-top: 10vh; } }
+    @media print { .corner-text { display: none; } }
   </style>
 </head>
 <body>
   <div class="content-container">
+    <h1 id="site-title" title="click to toggle theme"></h1>
+    <br>
 
+    <div class="url-box" id="url-box" onclick="copyBox(this)">
+      <span id="url-display"></span>
+      <span class="copy-hint">click to copy</span>
+    </div>
 
-<h1 id="site-title"></h1>
-<br>
+    <section>
+      <h2>Windows - Map network drive</h2>
+      <ol>
+        <li>Open File Explorer → right-click <strong>This PC</strong> → <strong>Map network drive</strong></li>
+        <li>Paste the URL above into the folder field and click finish</li>
+      </ol>
 
-<section>
-  <h2>Windows</h2>
-  <ol>
-    <li>Open File Explorer → right-click <strong>This PC</strong> → <strong>Map network drive</strong></li>
-    <li>Choose <em>Connect to a Web site…</em>, paste the URL above, click Next through the wizard</li>
-    <li>Or from an elevated prompt:</li>
-  </ol>
-  <pre id="win-cmd" onclick="copyPre(this)"></pre>
-</section>
+      <h2 style="margin-top:1.4em">Windows - net use</h2>
+      <ol><li>From an elevated prompt:</li></ol>
+      <pre id="win-cmd" onclick="copyPre(this)"></pre>
+    </section>
 
-<section>
-  <h2>macOS</h2>
-  <ol>
-    <li>In Finder press <strong>⌘K</strong>, paste the URL, connect as Guest</li>
-    <li>Or from Terminal:</li>
-  </ol>
-  <pre id="mac-mount" onclick="copyPre(this)"></pre>
-</section>
+    <section>
+      <h2>macOS</h2>
+      <ol>
+        <li>In Finder press <strong>⌘K</strong>, paste the URL, connect as Guest</li>
+        <li>Or from Terminal:</li>
+      </ol>
+      <pre id="mac-mount" onclick="copyPre(this)"></pre>
+    </section>
 
-<section>
-  <h2>Linux - Dolphin</h2>
-  <ol><li>Press <strong>Ctrl+L</strong> and enter:</li></ol>
-  <pre id="linux-dolphin" onclick="copyPre(this)"></pre>
+    <section>
+      <h2>Linux - Dolphin</h2>
+      <ol><li>Press <strong>Ctrl+L</strong> and enter:</li></ol>
+      <pre id="linux-dolphin" onclick="copyPre(this)"></pre>
 
-  <h2 style="margin-top:1.4em">Linux - Nautilus</h2>
-  <ol><li>Press <strong>Ctrl+L</strong> and enter:</li></ol>
-  <pre id="linux-nautilus" onclick="copyPre(this)"></pre>
+      <h2 style="margin-top:1.4em">Linux - Nautilus</h2>
+      <ol><li>Press <strong>Ctrl+L</strong> and enter:</li></ol>
+      <pre id="linux-nautilus" onclick="copyPre(this)"></pre>
 
-  <h2 style="margin-top:1.4em">Linux - davfs2 + rsync</h2>
-  <pre id="linux-mount" onclick="copyPre(this)"></pre>
+      <h2 style="margin-top:1.4em">Linux - davfs2 + rsync</h2>
+      <pre id="linux-mount" onclick="copyPre(this)"></pre>
 
-  <h2 style="margin-top:1.4em">rclone</h2>
-  <ol>
-    <li>Run <code>rclone config</code> → new remote → WebDAV → paste URL → vendor: other → no credentials</li>
-    <li>Then copy:</li>
-  </ol>
-  <pre id="linux-rclone" onclick="copyPre(this)"></pre>
-</section>
-
-
+      <h2 style="margin-top:1.4em">rclone</h2>
+      <ol>
+        <li>Run <code>rclone config</code> → new remote → WebDAV → paste URL → vendor: other → no credentials</li>
+        <li>Then copy:</li>
+      </ol>
+      <pre id="linux-rclone" onclick="copyPre(this)"></pre>
+    </section>
   </div>
 
   <script>
-    const base = window.location.origin + "/webdav/";
+    const root = document.documentElement;
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
+
+    function applyTheme(dark) {
+      root.setAttribute("data-theme", dark ? "dark" : "light");
+    }
+
+    applyTheme(prefersDark.matches);
+    prefersDark.addEventListener("change", e => applyTheme(e.matches));
+
+    document.getElementById("site-title").addEventListener("click", () => {
+      const isDark = root.getAttribute("data-theme") === "dark";
+      applyTheme(!isDark);
+    });
 
     fetch("/config.json")
       .then(r => r.json())
       .then(cfg => {
         document.getElementById("site-title").textContent = cfg.title;
         document.title = cfg.title;
+
+        const base = cfg.url;
+        document.getElementById("url-display").textContent = base;
+
+        function toUnc(url) {
+          const u = new URL(url);
+          const p = u.pathname.replace(/^\//, "").replace(/\//g, "\\");
+          return u.protocol === "https:" ? `\\\\${u.hostname}@SSL\\${p}` : `\\\\${u.hostname}\\${p}`;
+        }
+
+        document.getElementById("win-cmd").textContent =
+          `net use Z: ${toUnc(base)} /persistent:yes`;
+
+        document.getElementById("mac-mount").textContent =
+          `sudo mkdir -p /Volumes/webdav\nmount_webdav '${base}' /Volumes/webdav`;
+
+        document.getElementById("linux-dolphin").textContent =
+          base.replace(/^https:\/\//, "webdavs://").replace(/^http:\/\//, "webdav://");
+
+        document.getElementById("linux-nautilus").textContent =
+          base.replace(/^https:\/\//, "davs://").replace(/^http:\/\//, "dav://");
+
+        document.getElementById("linux-mount").textContent =
+          `sudo apt install davfs2\nsudo mkdir -p /mnt/webdav\nsudo mount -t davfs '${base}' /mnt/webdav\nrsync -av /mnt/webdav/ ~/local-copy/`;
+
+        document.getElementById("linux-rclone").textContent =
+          `rclone copy myremote: ~/local-copy/`;
       });
 
-    function toUnc(url) {
-      const u = new URL(url);
-      const p = u.pathname.replace(/^\\//, "").replace(/\\//g, "\\\\");
-      return u.protocol === "https:" ? `\\\\\\\\${u.hostname}@SSL\\\\${p}` : `\\\\\\\\${u.hostname}\\\\${p}`;
+    function flash(el) {
+      el.classList.add("copied");
+      setTimeout(() => el.classList.remove("copied"), 1500);
     }
-
-    document.getElementById("win-cmd").textContent =
-      `net use Z: ${toUnc(base)} /persistent:yes`;
-
-    document.getElementById("mac-mount").textContent =
-      `sudo mkdir -p /Volumes/webdav\nmount_webdav '${base}' /Volumes/webdav`;
-
-    document.getElementById("linux-dolphin").textContent =
-      base.replace(/^https:\\/\\//, "webdavs://").replace(/^http:\\/\\//, "webdav://");
-
-    document.getElementById("linux-nautilus").textContent =
-      base.replace(/^https:\\/\\//, "davs://").replace(/^http:\\/\\//, "dav://");
-
-    document.getElementById("linux-mount").textContent =
-      `sudo apt install davfs2\nsudo mkdir -p /mnt/webdav\nsudo mount -t davfs '${base}' /mnt/webdav\nrsync -av /mnt/webdav/ ~/local-copy/`;
-
-    document.getElementById("linux-rclone").textContent =
-      `rclone copy myremote: ~/local-copy/`;
 
     function copyPre(el) {
-      navigator.clipboard.writeText(el.textContent).then(() => {
-        el.classList.add("copied");
-        setTimeout(() => el.classList.remove("copied"), 1500);
-      });
+      navigator.clipboard.writeText(el.textContent).then(() => flash(el));
+    }
+
+    function copyBox(el) {
+      const text = document.getElementById("url-display").textContent;
+      navigator.clipboard.writeText(text).then(() => flash(el));
     }
   </script>
-
 </body>
 </html>
