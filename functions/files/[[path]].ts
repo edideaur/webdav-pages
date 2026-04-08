@@ -25,11 +25,6 @@ export const onRequest: PagesFunction = async function (context) {
     });
   }
 
-  if (method === "GET" || method === "HEAD") {
-    if (!FILES.has(filePath)) return new Response("Not Found", { status: 404 });
-    return Response.redirect(new URL("/files/" + filePath, context.request.url).toString(), 302);
-  }
-
   return new Response("Method Not Allowed", {
     status: 405,
     headers: { Allow: "GET, HEAD, OPTIONS, PROPFIND" },
